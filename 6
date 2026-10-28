@@ -1,0 +1,87 @@
+import pandas as pd
+from IPython.display import display
+from qiskit import QuantumCircuit
+from qiskit_aer import AerSimulator
+from qiskit.visualization import plot_histogram
+secret_string = "1011"
+n = len(secret_string)
+qc = QuantumCircuit(n + 1, n)
+qc.x(n)
+qc.h(n)
+for qubit in range(n):
+    qc.h(qubit)
+qc.barrier()
+for index, bit in enumerate(reversed(secret_string)):
+    if bit == '1':
+        qc.cx(index, n)
+qc.barrier()
+for qubit in range(n):
+    qc.h(qubit)
+for qubit in range(n):
+    qc.measure(qubit, qubit)
+print("--- Quantum Circuit Diagram ---")
+fig_circuit = qc.draw(output='mpl')
+fig_circuit.suptitle("Bernstein-Vazirani Quantum Circuit Diagram", fontsize=14, y=1.05)
+# Using display() forces Jupyter to render this graphic right here
+display(fig_circuit)
+simulator = AerSimulator()
+result = simulator.run(qc, shots=1024).result()
+counts = result.get_counts()
+df = pd.DataFrame(list(counts.items()), columns=['Measured Bitstring', 'Shot Count'])
+df['Probability'] = df['Shot Count'] / df['Shot Count'].sum()
+print("\n--- Bernstein-Vazirani Execution Results ---")
+print(f"Secret Bitstring to find: {secret_string}\n")
+print(df.to_string(index=False))
+print("\n--- Measurement Probabilities ---")
+plot_histogram(counts, color='midnightblue', title="Bernstein-Vazirani Output Statistics")
+
+
+
+
+
+
+
+
+
+
+
+Simon’s algorithm
+import pandas as pd
+from IPython.display import display
+from qiskit import QuantumCircuit
+from qiskit_aer import AerSimulator
+from qiskit.visualization import plot_histogram
+secret_string = "11"
+n = len(secret_string)
+qc = QuantumCircuit(2 * n, n)
+for qubit in range(n):
+    qc.h(qubit)
+qc.barrier()
+for qubit in range(n):
+    qc.cx(qubit, qubit + n)
+first_one_idx = secret_string.find('1')
+if first_one_idx != -1:
+    for index, bit in enumerate(secret_string):
+        if bit == '1':
+            qc.cx(first_one_idx, index + n)
+qc.barrier()
+for qubit in range(n):
+    qc.h(qubit)
+for qubit in range(n):
+    qc.measure(qubit, qubit)
+print("--- Simon's Algorithm Quantum Circuit Diagram ---")
+fig_circuit = qc.draw(output='mpl')
+fig_circuit.suptitle("Simon's Algorithm Circuit Design Layout", fontsize=14, y=1.05)
+# Forces Jupyter to render the colored circuit graphic immediately
+display(fig_circuit)
+simulator = AerSimulator()
+result = simulator.run(qc, shots=1024).result()
+counts = result.get_counts()
+df = pd.DataFrame(list(counts.items()), columns=['Measured Bitstring (b)', 'Shot Count'])
+df['Probability'] = df['Shot Count'] / df['Shot Count'].sum()
+print("\n--- Simon's Algorithm Execution Results ---")
+print(f"Secret Mask 's' to resolve: {secret_string}\n")
+print(df.to_string(index=False))
+print("\n--- Subspace Measurement Probabilities ---")
+plot_histogram(counts, color='indigo', title=f"Simon's Algorithm Frequency Analysis (s = {secret_string})")
+
