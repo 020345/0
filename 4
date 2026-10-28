@@ -1,0 +1,79 @@
+Day4:
+Quantum Superdense:
+from qiskit import QuantumCircuit
+from qiskit.visualization import plot_bloch_multivector
+from qiskit.quantum_info import Statevector
+bitList = ["00","01","10","11"]
+for bit in bitList:
+    qc = QuantumCircuit(2)
+    qc.h(0)
+    qc.cx(0,1)
+    #state = Statevector(qc)
+    #display(state.draw('latex'))
+    if bit == "01":
+        qc.z(0)
+    if bit == "10":
+        qc.x(0)
+    if bit == "11":
+        qc.x(0)
+        qc.z(0)
+    state = Statevector(qc)
+    display(state.draw('latex'))
+    qc.cx(0,1)
+    qc.h(0)
+    #print(qc.draw())
+    state = Statevector(qc)
+    display(state.draw('latex'))
+    state = Statevector(qc)
+    display(state.draw('bloch'))
+
+
+
+
+
+
+Quantum teleportation:-
+from qiskit import QuantumCircuit
+from qiskit.quantum_info import Statevector
+from IPython.display import display
+from qiskit.visualization import plot_bloch_multivector
+import matplotlib.pyplot as plt
+from qiskit.visualization import plot_state_qsphere
+from math import pi
+import numpy as np
+bitlist = ["000", "001", "010", "011"]
+for bit in bitlist:
+    qc = QuantumCircuit(3)
+    if bit == "001":
+        qc.x(0)  
+    elif bit == "010":
+        qc.h(0)  
+    elif bit == "011":
+        qc.x(0)  
+        qc.h(0)
+    state = Statevector(qc)
+    display(state.draw('latex'))
+    qc.h(1)
+    qc.cx(1,2)
+    qc.cx(0,1)
+    qc.h(0)
+    qc.cx(1,2)
+    qc.cz(0,2)
+    state = Statevector(qc)
+    display(state.draw('latex'))
+    display(qc.draw('mpl'))
+    display(plot_state_qsphere(state))
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
